@@ -22,6 +22,7 @@ public class DruidConstants {
     public static final String PROP_DRUID_ZOOKEEPER_CLIENTPORT = "druid.zookeeper.property.clientPort";
 
     public static final String FILE_DRUID_DEFAULT_PROPERTIES = "whirr-druid-default.properties";
+    public static final int BROKER_CLIENT_PORT = 8080;
 
     private DruidConstants() {
     }

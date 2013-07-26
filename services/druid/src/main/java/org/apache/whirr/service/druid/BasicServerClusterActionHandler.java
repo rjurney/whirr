@@ -37,75 +37,78 @@ import org.apache.whirr.service.zookeeper.ZooKeeperCluster;
  */
 public class BasicServerClusterActionHandler extends DruidClusterActionHandler {
 
-    private final String role;
-    private final int defaultPort;
-    private final String configKeyPort;
+	private final String role;
+	private final int defaultPort;
+	private final String configKeyPort;
 
-    public BasicServerClusterActionHandler(String role, int port, String configKeyPort) {
-        this.role = role;
-        this.defaultPort = port;
-        this.configKeyPort = configKeyPort;
-    }
+	public BasicServerClusterActionHandler(String role, int port,
+			String configKeyPort) {
+		this.role = role;
+		this.defaultPort = port;
+		this.configKeyPort = configKeyPort;
+	}
 
-    @Override
-    public String getRole() {
-        return role;
-    }
+	@Override
+	public String getRole() {
+		return role;
+	}
 
-    @Override
-    protected void beforeBootstrap(ClusterActionEvent event) throws IOException {
-        ClusterSpec clusterSpec = event.getClusterSpec();
-        Configuration conf = getConfiguration(clusterSpec);
+	@Override
+	protected void beforeBootstrap(ClusterActionEvent event) throws IOException {
+		ClusterSpec clusterSpec = event.getClusterSpec();
+		Configuration conf = getConfiguration(clusterSpec);
 
-        addStatement(event, call("retry_helpers"));
-        addStatement(event, call("configure_hostnames"));
-        addStatement(event, call("install_tarball_no_md5"));
+		addStatement(event, call("retry_helpers"));
+		addStatement(event, call("configure_hostnames"));
+		addStatement(event, call("install_tarball_no_md5"));
 
-        addStatement(event, call(getInstallFunction(conf, "java", "install_openjdk")));
+		addStatement(event,
+				call(getInstallFunction(conf, "java", "install_openjdk")));
 
-        String tarurl = prepareRemoteFileUrl(event,
-                conf.getString(DruidConstants.KEY_TARBALL_URL));
+		String tarurl = prepareRemoteFileUrl(event,
+				conf.getString(DruidConstants.KEY_TARBALL_URL));
 
-        addStatement(event, call(
-                getInstallFunction(conf),
-                DruidConstants.PARAM_TARBALL_URL, tarurl)
-        );
-    }
+		addStatement(
+				event,
+				call(getInstallFunction(conf),
+						DruidConstants.PARAM_TARBALL_URL, tarurl));
+	}
 
-    @Override
-    protected void beforeConfigure(ClusterActionEvent event)
-            throws IOException, InterruptedException {
-        ClusterSpec clusterSpec = event.getClusterSpec();
-        Cluster cluster = event.getCluster();
-        int port = defaultPort;
-        if (configKeyPort != null) {
-            port = getConfiguration(clusterSpec).getInt(configKeyPort, defaultPort);
-        }
+	@Override
+	protected void beforeConfigure(ClusterActionEvent event)
+			throws IOException, InterruptedException {
+		ClusterSpec clusterSpec = event.getClusterSpec();
+		Cluster cluster = event.getCluster();
+		int port = defaultPort;
+		if (configKeyPort != null) {
+			port = getConfiguration(clusterSpec).getInt(configKeyPort,
+					defaultPort);
+		}
 
-        Cluster.Instance instance = cluster.getInstanceMatching(role(role));
-        InetAddress masterPublicAddress = instance.getPublicAddress();
+		Cluster.Instance instance = cluster.getInstanceMatching(role(role));
+		InetAddress masterPublicAddress = instance.getPublicAddress();
 
-        event.getFirewallManager().addRule(
-                Rule.create().destination(instance).port(port)
-        );
+		event.getFirewallManager().addRule(
+				Rule.create().destination(instance).port(port));
 
-        handleFirewallRules(event);
+		handleFirewallRules(event);
 
-        String master = masterPublicAddress.getHostName();
-        String quorum = ZooKeeperCluster.getHosts(cluster);
+		String master = masterPublicAddress.getHostName();
+		String quorum = ZooKeeperCluster.getHosts(cluster);
 
-        String tarurl = prepareRemoteFileUrl(event,
-                getConfiguration(clusterSpec).getString(DruidConstants.KEY_TARBALL_URL));
+		String tarurl = prepareRemoteFileUrl(
+				event,
+				getConfiguration(clusterSpec).getString(
+						DruidConstants.KEY_TARBALL_URL));
 
-        addStatement(event, call("retry_helpers"));
-        addStatement(event, call(
-                getConfigureFunction(getConfiguration(clusterSpec)),
-                role,
-                DruidConstants.PARAM_MASTER, master,
-                DruidConstants.PARAM_QUORUM, quorum,
-                DruidConstants.PARAM_PORT, Integer.toString(port),
-                DruidConstants.PARAM_TARBALL_URL, tarurl)
-        );
-    }
+		addStatement(event, call("retry_helpers"));
+		addStatement(
+				event,
+				call(getConfigureFunction(getConfiguration(clusterSpec)), role,
+						DruidConstants.PARAM_MASTER, master,
+						DruidConstants.PARAM_QUORUM, quorum,
+						DruidConstants.PARAM_PORT, Integer.toString(port),
+						DruidConstants.PARAM_TARBALL_URL, tarurl));
+	}
 
 }

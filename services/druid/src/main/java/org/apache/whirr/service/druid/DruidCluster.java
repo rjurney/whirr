@@ -15,9 +15,9 @@ import java.net.InetAddress;
  */
 public class DruidCluster {
 
-        public static InetAddress getBrokerPublicAddress(Cluster cluster) throws IOException {
-            return cluster.getInstanceMatching(
-                    RolePredicates.role(DruidBrokerClusterActionHandler.ROLE))
-                    .getPublicAddress();
-        }
+    public static InetAddress getBrokerPublicAddress(Cluster cluster) throws IOException {
+        return cluster.getInstanceMatching(
+                RolePredicates.role(DruidBrokerClusterActionHandler.ROLE))
+                .getPublicAddress();
+    }
 }

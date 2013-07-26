@@ -39,10 +39,10 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     }
 
     protected String getInstallFunction(Configuration config) {
-        return getInstallFunction(config, "hbase", DruidConstants.FUNCTION_INSTALL);
+        return getInstallFunction(config, "druid", DruidConstants.FUNCTION_INSTALL);
     }
 
     protected String getConfigureFunction(Configuration config) {
-        return getConfigureFunction(config, "hbase", DruidConstants.FUNCTION_CONFIGURE);
+        return getConfigureFunction(config, "druid", DruidConstants.FUNCTION_CONFIGURE);
     }
 }

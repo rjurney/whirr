@@ -23,8 +23,9 @@ import static org.apache.whirr.RolePredicates.role;
 public class DruidConfigurationBuilder {
     public static Configuration buildDruidConfig(String path, ClusterSpec clusterSpec, Cluster cluster)
             throws ConfigurationException, IOException {
-        Configuration config = buildDruidConfiguration(clusterSpec, cluster,
-                new PropertiesConfiguration(DruidConfigurationBuilder.class.getResource("/" + DruidConstants.FILE_DRUID_DEFAULT_PROPERTIES)));
+        PropertiesConfiguration propsConfig = new PropertiesConfiguration(DruidConfigurationBuilder.class.getResource("/" + DruidConstants.FILE_DRUID_DEFAULT_PROPERTIES));
+        propsConfig.save(path);
+        Configuration config = buildDruidConfiguration(clusterSpec, cluster, propsConfig);
         return config;
     }
 
@@ -43,7 +44,7 @@ public class DruidConfigurationBuilder {
 
         Cluster.Instance broker = cluster.getInstanceMatching(
                 role(DruidBrokerClusterActionHandler.ROLE));
-        String masterHostName = broker.getPublicHostName();
+        String brokerHostName = broker.getPublicHostName();
 
         config.setProperty("druid.zk.service.host", ZooKeeperCluster.getHosts(cluster));
 
