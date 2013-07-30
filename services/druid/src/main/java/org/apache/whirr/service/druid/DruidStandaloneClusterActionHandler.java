@@ -1,4 +1,3 @@
-package org.apache.whirr.service.druid;
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,6 +16,8 @@ package org.apache.whirr.service.druid;
  * limitations under the License.
  */
 
+package org.apache.whirr.service.druid;
+
 import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
@@ -27,6 +28,7 @@ import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.net.InetAddress;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.whirr.Cluster;
@@ -46,6 +48,9 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
 
     public static final String DRUID_ROLE = "druid";
     private static final int REALTIME_PORT = 8080;
+    private static final int MASTER_PORT = 8081;
+    private static final int COMPUTE_PORT = 8082;
+    private static final int BROKER_PORT = 8083;
 
     @Override
     public String getRole() {
@@ -81,8 +86,18 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
         ClusterSpec clusterSpec = event.getClusterSpec();
         Cluster cluster = event.getCluster();
 
+        // Open a port for each service
         event.getFirewallManager().addRule(
                 Rule.create().destination(role(DRUID_ROLE)).port(REALTIME_PORT)
+        );
+        event.getFirewallManager().addRule(
+                Rule.create().destination(role(DRUID_ROLE)).port(MASTER_PORT)
+        );
+        event.getFirewallManager().addRule(
+                Rule.create().destination(role(DRUID_ROLE)).port(COMPUTE_PORT)
+        );
+        event.getFirewallManager().addRule(
+                Rule.create().destination(role(DRUID_ROLE)).port(BROKER_PORT)
         );
 
         handleFirewallRules(event);
@@ -91,8 +106,12 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
         String quorum = ZooKeeperCluster.getHosts(cluster);
         Configuration config = getConfiguration(clusterSpec);
 
+        // Pass the broker hostname through to configure script
+        InetAddress brokerAddress = DruidCluster.getBrokerPublicAddress(cluster);
+        String brokerIp = brokerAddress.getHostAddress();
+
         addStatement(event, call("retry_helpers"));
-        addStatement(event, call(getConfigureFunction(config), quorum));
+        addStatement(event, call(getConfigureFunction(config), quorum, brokerIp));
     }
 
     @Override

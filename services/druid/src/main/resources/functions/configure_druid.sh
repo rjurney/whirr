@@ -17,6 +17,7 @@
 function configure_druid() {
 
   ZOOKEEKER_QUORUM=$1
+  BROKER_ADDRESS=$2
 
   # Configure runtime.properties with Zookeeper address
   cat > /usr/local/druid-services-0.5.7/config/runtime.properties <<EOF
@@ -60,7 +61,7 @@ druid.paths.segmentInfoCache=/tmp/druid/segmentInfoCache
 druid.pusher.local.storageDirectory=/tmp/druid/localStorage
 druid.pusher.local=true
 
-druid.host=127.0.0.1:8080
+druid.host=$BROKER_ADDRESS:8080
 EOF
 
 }
