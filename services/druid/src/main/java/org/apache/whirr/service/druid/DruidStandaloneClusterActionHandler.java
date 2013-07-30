@@ -109,12 +109,8 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
         String quorum = ZooKeeperCluster.getHosts(cluster);
         Configuration config = getConfiguration(clusterSpec);
 
-        // Pass the broker hostname through to configure script
-        InetAddress brokerAddress = DruidCluster.getBrokerPublicAddress(cluster);
-        String brokerIp = brokerAddress.getHostAddress();
-
         addStatement(event, call("retry_helpers"));
-        addStatement(event, call(getConfigureFunction(config), quorum, brokerIp));
+        addStatement(event, call(getConfigureFunction(config), quorum));
     }
 
     @Override
@@ -133,11 +129,9 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
         Configuration config = getConfiguration(event.getClusterSpec());
         String configureFunction = getConfigureFunction(config);
 
-        if (configureFunction.equals("configure_druid")) {
+        if (configureFunction.equals("configure_druid_standalone")) {
             addStatement(event, call(getStartFunction(config)));
         } else {
-            // don't call start_zookeeper, because the CDH config starts the CDH
-            // version of zookeeper on its own
         }
     }
 
@@ -157,7 +151,7 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
     }
 
     protected String getConfigureFunction(Configuration config) {
-        return getConfigureFunction(config, getRole(), "configure_" + getRole());
+        return getConfigureFunction(config, getRole(), "configure_" + getRole() + "_standalone");
     }
 
     protected String getStartFunction(Configuration config) {
