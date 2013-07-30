@@ -102,6 +102,9 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
 
         handleFirewallRules(event);
 
+        // Setup hostnames
+        addStatement(event, call("configure_hostnames"));
+
         // Pass Zookeeper quorom to configure script
         String quorum = ZooKeeperCluster.getHosts(cluster);
         Configuration config = getConfiguration(clusterSpec);

@@ -17,13 +17,12 @@
 function configure_druid() {
 
   ZOOKEEKER_QUORUM=$1
-  BROKER_ADDRESS=$2
+  HOSTNAME=`hostname`
 
   # Configure runtime.properties with Zookeeper address
   cat > /usr/local/druid-services-0.5.7/config/runtime.properties <<EOF
-druid.host=127.0.0.1
-druid.port=8080
 
+# Druid base config
 com.metamx.emitter.logging=true
 
 druid.processing.formatString=processing_%s
@@ -61,7 +60,8 @@ druid.paths.segmentInfoCache=/tmp/druid/segmentInfoCache
 druid.pusher.local.storageDirectory=/tmp/druid/localStorage
 druid.pusher.local=true
 
-druid.host=$BROKER_ADDRESS:8080
+druid.host=$HOSTNAME:8080
+druid.port=8080
 EOF
 
 }
