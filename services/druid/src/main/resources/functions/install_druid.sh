@@ -15,26 +15,15 @@
 # limitations under the License.
 #
 function install_druid() {
-  local OPTIND
-  local OPTARG
-
-  DRUID_TAR_URL=
-  while getopts "u:" OPTION; do
-    case $OPTION in
-    u)
-      DRUID_TAR_URL="$OPTARG"
-      ;;
-    esac
-  done
 
   # Install MySQL
   export DEBIAN_FRONTEND=noninteractive
-  sudo debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password password diurd'
-  sudo debconf-set-selections <<< 'mysql-server-5.5 mysql-server/root_password_again password diurd'
-  sudo apt-get -q -y -V --force-yes --reinstall install mysql-server-5.5
+  sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password password diurd'
+  sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password_again password diurd'
+  sudo apt-get -q -y -V --force-yes --reinstall install mysql-server-5.1
 
   # Setup tables
   mysql -u root -pdiurd -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" 2>&1 > /dev/null
 
-  install_tarball $DRUID_TAR_URL
+  install_tarball http://static.druid.io/artifacts/releases/druid-services-0.5.7-bin.tar.gz
 }

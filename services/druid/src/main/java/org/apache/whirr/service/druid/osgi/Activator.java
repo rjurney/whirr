@@ -18,7 +18,8 @@
 package org.apache.whirr.service.druid.osgi;
 
 import org.apache.whirr.service.ClusterActionHandler;
-import org.apache.whirr.service.druid.DruidBrokerClusterActionHandler;
+import org.apache.whirr.service.druid.DruidStandaloneClusterActionHandler;
+import org.apache.whirr.service.druid.DruidStandaloneClusterActionHandler;
 import org.jclouds.scriptbuilder.functionloader.osgi.BundleFunctionLoader;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -30,8 +31,8 @@ public class Activator implements BundleActivator {
 
     private BundleFunctionLoader functionLoader;
 
-    private final ClusterActionHandler brokerClusterActionHandler = new DruidBrokerClusterActionHandler();
-    private ServiceRegistration brokerRegistration;
+    private final ClusterActionHandler druidClusterActionHandler = new DruidStandaloneClusterActionHandler();
+    private ServiceRegistration druidRegistration;
 
     /**
      * Called when this bundle is started so the Framework can perform the
@@ -55,8 +56,8 @@ public class Activator implements BundleActivator {
         functionLoader.start();
 
         Properties brokerProps = new Properties();
-        brokerProps.put("name", "druid-broker");
-        brokerRegistration = context.registerService(ClusterActionHandler.class.getName(), brokerClusterActionHandler, brokerProps);
+        brokerProps.put("name", "druid");
+        druidRegistration = context.registerService(ClusterActionHandler.class.getName(), druidClusterActionHandler, brokerProps);
 
     }
 
@@ -79,8 +80,8 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        if (brokerRegistration != null) {
-            brokerRegistration.unregister();
+        if (druidRegistration != null) {
+            druidRegistration.unregister();
         }
         if (functionLoader != null) {
             functionLoader.stop();
