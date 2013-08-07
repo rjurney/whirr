@@ -20,6 +20,7 @@ package org.apache.whirr.service.druid;
 
 import java.util.Set;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.whirr.RolePredicates;
 import org.apache.whirr.Cluster.Instance;
 
@@ -31,10 +32,49 @@ import java.io.IOException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.whirr.ClusterSpec;
 import org.apache.whirr.service.ClusterActionHandlerSupport;
+import org.apache.whirr.service.FirewallManager;
+import org.apache.whirr.service.zookeeper.ZooKeeperCluster;
 
+import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupport {
+
+    public static final String ROLE = "druid-invalid";
+    public static final Integer PORT = 8080;
+
+    @Override
+    protected void beforeConfigure(ClusterActionEvent event) throws IOException {
+        ClusterSpec clusterSpec = event.getClusterSpec();
+        Cluster cluster = event.getCluster();
+        Configuration conf = getConfiguration(clusterSpec);
+
+        event.getFirewallManager().addRule(
+                FirewallManager.Rule.create()
+                        .destination(cluster.getInstancesMatching(role(ROLE)))
+                        .port(DruidConstants.BROKER_CLIENT_PORT)
+        );
+
+        handleFirewallRules(event);
+
+        try {
+            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
+        } catch (ConfigurationException e) {
+            throw new IOException(e);
+        }
+
+        String quorum = ZooKeeperCluster.getHosts(cluster);
+
+        String tarurl = prepareRemoteFileUrl(event,
+                conf.getString(DruidConstants.KEY_TARBALL_URL));
+        addStatement(event, call("retry_helpers"));
+        addStatement(event, call(
+                getConfigureFunction(conf),
+                ROLE,
+                quorum,
+                PORT.toString()
+        ));
+    }
 
     protected synchronized Configuration getConfiguration(ClusterSpec clusterSpec) throws IOException {
         return getConfiguration(clusterSpec, DruidConstants.FILE_DRUID_DEFAULT_PROPERTIES);

@@ -33,6 +33,7 @@ import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public class DruidMasterClusterActionHandler extends DruidClusterActionHandler {
     public static final String ROLE = "druid-master";
+    public static final Integer PORT = 8081;
 
     @Override
     public String getRole() {
@@ -57,37 +58,4 @@ public class DruidMasterClusterActionHandler extends DruidClusterActionHandler {
                 getInstallFunction(getConfiguration(clusterSpec)), tarurl)
         );
     }
-
-    @Override
-    protected void beforeConfigure(ClusterActionEvent event) throws IOException {
-        ClusterSpec clusterSpec = event.getClusterSpec();
-        Cluster cluster = event.getCluster();
-        Configuration conf = getConfiguration(clusterSpec);
-
-        event.getFirewallManager().addRule(
-                FirewallManager.Rule.create()
-                        .destination(cluster.getInstancesMatching(role(ROLE)))
-                        .port(DruidConstants.BROKER_CLIENT_PORT)
-        );
-
-        handleFirewallRules(event);
-
-        try {
-            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
-        } catch (ConfigurationException e) {
-            throw new IOException(e);
-        }
-
-        String quorum = ZooKeeperCluster.getHosts(cluster);
-
-        String tarurl = prepareRemoteFileUrl(event,
-                conf.getString(DruidConstants.KEY_TARBALL_URL));
-        addStatement(event, call("retry_helpers"));
-        addStatement(event, call(
-                getConfigureFunction(conf),
-                ROLE,
-                quorum
-        ));
-    }
-
 }
