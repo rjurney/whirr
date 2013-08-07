@@ -129,7 +129,7 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
         String configureFunction = getConfigureFunction(config);
 
         if (configureFunction.equals("configure_druid_standalone")) {
-            addStatement(event, call(getStartFunction(config)));
+            addStatement(event, call(getStartFunction(config), DRUID_ROLE));
         } else {
         }
     }

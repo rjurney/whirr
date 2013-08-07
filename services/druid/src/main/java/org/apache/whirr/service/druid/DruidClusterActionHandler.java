@@ -90,7 +90,13 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
     @Override
     protected void beforeStart(ClusterActionEvent event) throws IOException {
-        addStatement(event, call("start_druid"));
+        Configuration config = getConfiguration(event.getClusterSpec());
+        String configureFunction = getConfigureFunction(config);
+
+        if (configureFunction.equals("configure_druid")) {
+            addStatement(event, call(getStartFunction(config), ROLE));
+        } else {
+        }
     }
 
     @Override
@@ -101,5 +107,9 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     @Override
     protected void beforeCleanup(ClusterActionEvent event) throws IOException {
         addStatement(event, call("cleanup_druid"));
+    }
+
+    protected String getStartFunction(Configuration config) {
+        return getStopFunction(config, getRole(), "start_" + getRole());
     }
 }
