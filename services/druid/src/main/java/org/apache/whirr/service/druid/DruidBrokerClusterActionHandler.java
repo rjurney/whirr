@@ -54,8 +54,8 @@ import org.slf4j.LoggerFactory;
 
 public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
 
-    public static final String ROLE = "druid-broker";
-    public static final Integer PORT = 8080;
+    public String ROLE = "druid-broker";
+    public Integer PORT = 8080;
 
     @Override
     public String getRole() {

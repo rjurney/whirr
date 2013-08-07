@@ -40,8 +40,8 @@ import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupport {
 
-    public static final String ROLE = "druid-invalid";
-    public static final Integer PORT = 8080;
+    public String ROLE = "druid-invalid-override-me";
+    public Integer PORT = 8080;
 
     @Override
     protected void beforeConfigure(ClusterActionEvent event) throws IOException {
