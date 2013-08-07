@@ -31,8 +31,8 @@ import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public class DruidRealtimeClusterActionHandler extends DruidClusterActionHandler {
-    public String ROLE = "druid-realtime";
-    public Integer PORT = 8082;
+    public static String ROLE = "druid-realtime";
+    public static Integer PORT = 8082;
 
     @Override
     public String getRole() {

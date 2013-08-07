@@ -33,8 +33,8 @@ import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {
-    public String ROLE = "druid-mysql";
-    public Integer PORT = 3306;
+    public static String ROLE = "druid-mysql";
+    public static Integer PORT = 3306;
 
     @Override
     public String getRole() {
@@ -47,6 +47,6 @@ public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {
         Configuration conf = getConfiguration(clusterSpec);
 
         addStatement(event, call("retry_helpers"));
-        addStatement(event, call("install_mysql")); // via apt-get
+        addStatement(event, call("install_mysql")); // installed/run via apt-get
     }
 }

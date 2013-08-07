@@ -34,34 +34,40 @@ import org.apache.whirr.ClusterSpec;
 import org.apache.whirr.service.ClusterActionHandlerSupport;
 import org.apache.whirr.service.FirewallManager;
 import org.apache.whirr.service.zookeeper.ZooKeeperCluster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupport {
 
-    public String ROLE = "druid-invalid-override-me";
-    public Integer PORT = 8080;
+    public static String ROLE = "druid-invalid-override-me";
+    public static Integer PORT = 8080;
 
+    private static final Logger LOG =
+            LoggerFactory.getLogger(DruidClusterActionHandler.class);
+
+    // Always over-ridden in subclass
     @Override
     protected void beforeConfigure(ClusterActionEvent event) throws IOException {
         ClusterSpec clusterSpec = event.getClusterSpec();
         Cluster cluster = event.getCluster();
         Configuration conf = getConfiguration(clusterSpec);
 
+        LOG.info("Role: [" + ROLE + "] Port: [" + PORT + "]");
+        // Open a port for each service
         event.getFirewallManager().addRule(
-                FirewallManager.Rule.create()
-                        .destination(cluster.getInstancesMatching(role(ROLE)))
-                        .port(DruidConstants.BROKER_CLIENT_PORT)
+                FirewallManager.Rule.create().destination(role(ROLE)).port(PORT)
         );
 
         handleFirewallRules(event);
 
-        try {
-            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
-        } catch (ConfigurationException e) {
-            throw new IOException(e);
-        }
+//        try {
+//            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
+//        } catch (ConfigurationException e) {
+//            throw new IOException(e);
+//        }
 
         String quorum = ZooKeeperCluster.getHosts(cluster);
 

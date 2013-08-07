@@ -13,16 +13,10 @@ public class DruidConstants {
     public static final String FUNCTION_INSTALL = "install_druid";
     public static final String FUNCTION_CONFIGURE = "configure_druid";
 
-    public static final String PARAM_MASTER = "-m";
-    public static final String PARAM_QUORUM = "-q";
-    public static final String PARAM_PORT = "-p";
-    public static final String PARAM_TARBALL_URL = "-u";
-
     public static final String PROP_DRUID_ZOOKEEPER_QUORUM = "druid.zookeeper.quorum";
     public static final String PROP_DRUID_ZOOKEEPER_CLIENTPORT = "druid.zookeeper.property.clientPort";
 
     public static final String FILE_DRUID_DEFAULT_PROPERTIES = "whirr-druid-default.properties";
-    public static final int BROKER_CLIENT_PORT = 8080;
 
     private DruidConstants() {
     }

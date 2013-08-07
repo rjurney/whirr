@@ -53,10 +53,6 @@ public class DruidConfigurationBuilder {
             throws ConfigurationException, IOException {
         Configuration config = build(clusterSpec, cluster, defaults, "whirr");
 
-        Cluster.Instance broker = cluster.getInstanceMatching(
-                role(DruidBrokerClusterActionHandler.ROLE));
-        String brokerHostName = broker.getPublicHostName();
-
         config.setProperty("druid.zk.service.host", ZooKeeperCluster.getHosts(cluster));
 
         return config;
