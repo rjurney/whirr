@@ -14,3 +14,4 @@ org.apache.whirr.service.druid.DruidBrokerClusterActionHandler
 org.apache.whirr.service.druid.DruidMasterClusterActionHandler
 org.apache.whirr.service.druid.DruidComputeClusterActionHandler
 org.apache.whirr.service.druid.DruidRealtimeClusterActionHandler
+org.apache.whirr.service.druid.DruidMySQLClusterActionHandler

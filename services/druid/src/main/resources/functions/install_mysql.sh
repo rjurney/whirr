@@ -21,6 +21,6 @@ function install_mysql() {
   sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password_again password diurd'
   sudo apt-get -q -y -V --force-yes --reinstall install mysql-server-5.1
 
-  # Setup tables
+  # Setup druid tables
   mysql -u root -pdiurd -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" 2>&1 > /dev/null
 }

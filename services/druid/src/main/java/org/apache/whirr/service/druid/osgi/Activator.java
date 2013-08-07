@@ -46,6 +46,9 @@ public class Activator implements BundleActivator {
     private final ClusterActionHandler druidRealtimeClusterActionHandler = new DruidRealtimeClusterActionHandler();
     private ServiceRegistration druidRealtimeRegistration;
 
+    private final ClusterActionHandler druidMySQLClusterActionHandler = new DruidMySQLClusterActionHandler();
+    private ServiceRegistration druidMySQLRegistration;
+
     /**
      * Called when this bundle is started so the Framework can perform the
      * bundle-specific activities necessary to start this bundle. This method
@@ -87,6 +90,10 @@ public class Activator implements BundleActivator {
         realtimeProps.put("name", "druid-realtime");
         druidRealtimeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidRealtimeClusterActionHandler, realtimeProps);
 
+        Properties mysqlProps = new Properties();
+        realtimeProps.put("name", "druid-mysql");
+        druidRealtimeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidRealtimeClusterActionHandler, mysqlProps);
+
     }
 
     /**
@@ -122,6 +129,9 @@ public class Activator implements BundleActivator {
         }
         if (druidRealtimeRegistration != null) {
             druidRealtimeRegistration.unregister();
+        }
+        if (druidMySQLRegistration != null) {
+            druidMySQLRegistration.unregister();
         }
         if (functionLoader != null) {
             functionLoader.stop();

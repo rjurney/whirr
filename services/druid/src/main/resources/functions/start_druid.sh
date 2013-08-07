@@ -37,8 +37,11 @@ function start_druid() {
             # Run the realtime node
             nohup java -Xmx256m -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Ddruid.realtime.specFile=/usr/local/druid-services-0.5.7/config/realtime/realtime.spec -classpath /usr/local/druid-services-0.5.7/lib/druid-services-0.5.7-selfcontained.jar:/usr/local/druid-services-0.5.7/config/realtime com.metamx.druid.realtime.RealtimeMain 2>&1 > /usr/local/druid-services-0.5.7/logs/realtime.log &
             ;;
+        druid-mysql)
+            # Noop - MySQL runs automatically after apt-get installed
+            ;;
         *)
-            echo $"Usage: $0 {druid-standalone|druid-broker|druid-master|druid-compute|druid-realtime}"
+            echo $"Usage: $0 {druid|druid-broker|druid-master|druid-compute|druid-realtime|druid-mysql}"
             exit 1
     esac
 
