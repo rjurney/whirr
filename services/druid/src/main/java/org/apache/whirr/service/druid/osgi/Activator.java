@@ -18,7 +18,7 @@
 package org.apache.whirr.service.druid.osgi;
 
 import org.apache.whirr.service.ClusterActionHandler;
-import org.apache.whirr.service.druid.DruidStandaloneClusterActionHandler;
+import org.apache.whirr.service.druid.*;
 import org.apache.whirr.service.druid.DruidStandaloneClusterActionHandler;
 import org.jclouds.scriptbuilder.functionloader.osgi.BundleFunctionLoader;
 import org.osgi.framework.BundleActivator;
@@ -33,6 +33,18 @@ public class Activator implements BundleActivator {
 
     private final ClusterActionHandler druidClusterActionHandler = new DruidStandaloneClusterActionHandler();
     private ServiceRegistration druidRegistration;
+
+    private final ClusterActionHandler druidBrokerClusterActionHandler = new DruidBrokerClusterActionHandler();
+    private ServiceRegistration druidBrokerRegistration;
+
+    private final ClusterActionHandler druidMasterClusterActionHandler = new DruidMasterClusterActionHandler();
+    private ServiceRegistration druidMasterRegistration;
+
+    private final ClusterActionHandler druidComputeClusterActionHandler = new DruidComputeClusterActionHandler();
+    private ServiceRegistration druidComputeRegistration;
+
+    private final ClusterActionHandler druidRealtimeClusterActionHandler = new DruidRealtimeClusterActionHandler();
+    private ServiceRegistration druidRealtimeRegistration;
 
     /**
      * Called when this bundle is started so the Framework can perform the
@@ -55,9 +67,25 @@ public class Activator implements BundleActivator {
         functionLoader = new BundleFunctionLoader(context);
         functionLoader.start();
 
+        Properties standaloneProps = new Properties();
+        standaloneProps.put("name", "druid");
+        druidRegistration = context.registerService(ClusterActionHandler.class.getName(), druidClusterActionHandler, standaloneProps);
+
         Properties brokerProps = new Properties();
-        brokerProps.put("name", "druid");
-        druidRegistration = context.registerService(ClusterActionHandler.class.getName(), druidClusterActionHandler, brokerProps);
+        brokerProps.put("name", "druid-broker");
+        druidBrokerRegistration = context.registerService(ClusterActionHandler.class.getName(), druidBrokerClusterActionHandler, brokerProps);
+
+        Properties masterProps = new Properties();
+        masterProps.put("name", "druid-master");
+        druidMasterRegistration = context.registerService(ClusterActionHandler.class.getName(), druidMasterClusterActionHandler, masterProps);
+
+        Properties computeProps = new Properties();
+        computeProps.put("name", "druid-compute");
+        druidComputeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidComputeClusterActionHandler, computeProps);
+
+        Properties realtimeProps = new Properties();
+        realtimeProps.put("name", "druid-realtime");
+        druidRealtimeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidRealtimeClusterActionHandler, realtimeProps);
 
     }
 
@@ -82,6 +110,18 @@ public class Activator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         if (druidRegistration != null) {
             druidRegistration.unregister();
+        }
+        if (druidBrokerRegistration != null) {
+            druidBrokerRegistration.unregister();
+        }
+        if (druidMasterRegistration != null) {
+            druidMasterRegistration.unregister();
+        }
+        if (druidComputeRegistration != null) {
+            druidComputeRegistration.unregister();
+        }
+        if (druidRealtimeRegistration != null) {
+            druidRealtimeRegistration.unregister();
         }
         if (functionLoader != null) {
             functionLoader.stop();
