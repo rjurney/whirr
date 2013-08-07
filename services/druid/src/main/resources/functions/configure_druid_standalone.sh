@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-function configure_druid() {
+function configure_druid_standalone() {
 
   ZOOKEEKER_QUORUM=$1
   HOSTNAME=`hostname`

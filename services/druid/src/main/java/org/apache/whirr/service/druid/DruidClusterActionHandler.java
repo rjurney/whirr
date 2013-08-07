@@ -32,6 +32,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.whirr.ClusterSpec;
 import org.apache.whirr.service.ClusterActionHandlerSupport;
 
+import static org.jclouds.scriptbuilder.domain.Statements.call;
+
 public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupport {
 
     protected synchronized Configuration getConfiguration(ClusterSpec clusterSpec) throws IOException {
@@ -44,5 +46,20 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
     protected String getConfigureFunction(Configuration config) {
         return getConfigureFunction(config, "druid", DruidConstants.FUNCTION_CONFIGURE);
+    }
+
+    @Override
+    protected void beforeStart(ClusterActionEvent event) throws IOException {
+        addStatement(event, call("start_druid"));
+    }
+
+    @Override
+    protected void beforeStop(ClusterActionEvent event) throws IOException {
+        addStatement(event, call("stop_druid"));
+    }
+
+    @Override
+    protected void beforeCleanup(ClusterActionEvent event) throws IOException {
+        addStatement(event, call("cleanup_druid"));
     }
 }

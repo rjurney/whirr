@@ -18,43 +18,21 @@
 package org.apache.whirr.service.druid;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.whirr.Cluster;
 import org.apache.whirr.ClusterSpec;
 import org.apache.whirr.service.ClusterActionEvent;
 import org.apache.whirr.service.ClusterActionHandler;
-
-import java.io.IOException;
-
-import static org.jclouds.scriptbuilder.domain.Statements.call;
-import static org.apache.whirr.RolePredicates.role;
-import static org.apache.whirr.service.druid.DruidConfigurationBuilder.buildDruidConfig;
-import static org.jclouds.scriptbuilder.domain.Statements.call;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.Files;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Map.Entry;
-import java.util.Properties;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.whirr.Cluster;
-import org.apache.whirr.Cluster.Instance;
-import org.apache.whirr.ClusterSpec;
-import org.apache.whirr.service.ClusterActionEvent;
-import org.apache.whirr.service.FirewallManager.Rule;
+import org.apache.whirr.service.FirewallManager;
 import org.apache.whirr.service.zookeeper.ZooKeeperCluster;
-import org.apache.whirr.template.TemplateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
+import java.io.IOException;
 
-    public static final String ROLE = "druid-broker";
+import static org.apache.whirr.RolePredicates.role;
+import static org.jclouds.scriptbuilder.domain.Statements.call;
+
+public class DruidMasterClusterActionHandler extends DruidClusterActionHandler {
+    public static final String ROLE = "druid-master";
 
     @Override
     public String getRole() {
@@ -87,7 +65,7 @@ public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
         Configuration conf = getConfiguration(clusterSpec);
 
         event.getFirewallManager().addRule(
-                Rule.create()
+                FirewallManager.Rule.create()
                         .destination(cluster.getInstancesMatching(role(ROLE)))
                         .port(DruidConstants.BROKER_CLIENT_PORT)
         );
@@ -111,4 +89,5 @@ public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
                 quorum
         ));
     }
+
 }

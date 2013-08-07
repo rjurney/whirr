@@ -31,6 +31,7 @@ import java.util.Set;
 import java.net.InetAddress;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.whirr.Cluster;
 import org.apache.whirr.Cluster.Instance;
 import org.apache.whirr.ClusterSpec;
@@ -69,8 +70,6 @@ public class DruidStandaloneClusterActionHandler extends ClusterActionHandlerSup
 
         addStatement(event, call("retry_helpers"));
         addStatement(event, call("install_tarball"));
-        addStatement(event, call("install_service"));
-
         addStatement(event, call(getInstallFunction(config, "java", "install_oracle_jdk7")));
 
         String tarurl = config.getString("whirr.druid.tarball.url");
