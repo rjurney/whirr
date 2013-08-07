@@ -33,7 +33,7 @@ import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {
-    public String ROLE = "druid-master";
+    public String ROLE = "druid-mysql";
     public Integer PORT = 3306;
 
     @Override

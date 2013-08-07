@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# Installing mysql also starts/activates it, and then we create the Druid-specific tables below.
 function install_mysql() {
   # Install MySQL
   export DEBIAN_FRONTEND=noninteractive
