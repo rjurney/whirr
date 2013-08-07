@@ -70,6 +70,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 //        }
 
         String quorum = ZooKeeperCluster.getHosts(cluster);
+        String mysqlAddress = DruidCluster.getMySQLPublicAddress();
 
         String tarurl = prepareRemoteFileUrl(event,
                 conf.getString(DruidConstants.KEY_TARBALL_URL));
@@ -78,7 +79,8 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
                 getConfigureFunction(conf),
                 ROLE,
                 quorum,
-                PORT.toString()
+                PORT.toString(),
+                mysqlAddress
         ));
     }
 

@@ -19,10 +19,12 @@ function configure_druid_standalone() {
   ROLE=$1
   ZOOKEEKER_QUORUM=$2
   PORT=$3
+  MYSQL_HOSTNAME=$4
   HOSTNAME=`hostname`
+  ROLE_NAME=${ROLE/druid-//}
 
   # Configure runtime.properties with Zookeeper address
-  cat > /usr/local/druid-services-0.5.7/config/runtime.properties <<EOF
+  cat > /usr/local/druid-services-0.5.7/config/$ROLE_NAME/runtime.properties <<EOF
 
 # Druid base config
 com.metamx.emitter.logging=true
@@ -50,7 +52,7 @@ druid.zk.paths.base=/druid
 druid.database.segmentTable=prod_segments
 druid.database.user=druid
 druid.database.password=diurd
-druid.database.connectURI=jdbc:mysql://localhost:3306/druid
+druid.database.connectURI=jdbc:mysql://$MYSQL_HOSTNAME:3306/druid
 druid.zk.paths.discoveryPath=/druid/discoveryPath
 druid.database.ruleTable=rules
 druid.database.configTable=config
@@ -62,8 +64,8 @@ druid.paths.segmentInfoCache=/tmp/druid/segmentInfoCache
 druid.pusher.local.storageDirectory=/tmp/druid/localStorage
 druid.pusher.local=true
 
-druid.host=$HOSTNAME:8080
-druid.port=8080
+druid.host=$HOSTNAME:$PORT
+druid.port=$PORT
 EOF
 
 }
