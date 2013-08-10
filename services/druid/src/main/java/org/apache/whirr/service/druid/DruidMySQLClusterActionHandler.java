@@ -46,7 +46,6 @@ public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {
         ClusterSpec clusterSpec = event.getClusterSpec();
         Configuration conf = getConfiguration(clusterSpec);
 
-        addStatement(event, call("retry_helpers"));
         addStatement(event, call("install_mysql")); // installed/run via apt-get
     }
 }

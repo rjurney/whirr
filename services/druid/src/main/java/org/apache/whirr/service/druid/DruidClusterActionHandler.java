@@ -48,6 +48,8 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     private static final Logger LOG =
             LoggerFactory.getLogger(DruidClusterActionHandler.class);
 
+    public abstract String getRole();
+
     // Always over-ridden in subclass
     @Override
     protected void beforeConfigure(ClusterActionEvent event) throws IOException {
@@ -55,13 +57,13 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         Cluster cluster = event.getCluster();
         Configuration conf = getConfiguration(clusterSpec);
 
-        LOG.info("Role: [" + ROLE + "] Port: [" + PORT + "]");
+        LOG.info("Role: [" + getRole() + "] Port: [" + PORT + "]");
         // Open a port for each service
-        event.getFirewallManager().addRule(
-                FirewallManager.Rule.create().destination(role(ROLE)).port(PORT)
-        );
+//        event.getFirewallManager().addRule(
+//                FirewallManager.Rule.create().destination(role(ROLE)).port(PORT)
+//        );
 
-        handleFirewallRules(event);
+        //handleFirewallRules(event);
 
 //        try {
 //            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
@@ -70,18 +72,38 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 //        }
 
         String quorum = ZooKeeperCluster.getHosts(cluster);
-        String mysqlAddress = DruidCluster.getMySQLPublicAddress();
-
+        LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
+        //String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster).toString();
+        String mysqlAddress = "foo";
         String tarurl = prepareRemoteFileUrl(event,
                 conf.getString(DruidConstants.KEY_TARBALL_URL));
         addStatement(event, call("retry_helpers"));
         addStatement(event, call(
                 getConfigureFunction(conf),
-                ROLE,
+                getRole(),
                 quorum,
                 PORT.toString(),
                 mysqlAddress
         ));
+    }
+
+    @Override
+    protected void beforeBootstrap(ClusterActionEvent event) throws IOException {
+        ClusterSpec clusterSpec = event.getClusterSpec();
+        Configuration conf = getConfiguration(clusterSpec);
+
+        addStatement(event, call("retry_helpers"));
+        addStatement(event, call("install_tarball_no_md5"));
+        addStatement(event, call("configure_hostnames"));
+
+        //addStatement(event, call(getInstallFunction(conf, "java", "install_oracle_jdk7")));
+
+        String tarurl = prepareRemoteFileUrl(event,
+                getConfiguration(clusterSpec).getString(DruidConstants.KEY_TARBALL_URL));
+
+        addStatement(event, call(
+                getInstallFunction(getConfiguration(clusterSpec)), tarurl)
+        );
     }
 
     protected synchronized Configuration getConfiguration(ClusterSpec clusterSpec) throws IOException {
@@ -102,7 +124,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         String configureFunction = getConfigureFunction(config);
 
         if (configureFunction.equals("configure_druid")) {
-            addStatement(event, call(getStartFunction(config), ROLE));
+            addStatement(event, call(getStartFunction(config), getRole()));
         } else {
         }
     }
@@ -118,6 +140,8 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     }
 
     protected String getStartFunction(Configuration config) {
-        return getStopFunction(config, getRole(), "start_" + getRole());
+        return getStartFunction(config, getRole(), "start_druid");
     }
+
+
 }

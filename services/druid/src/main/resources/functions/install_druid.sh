@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 function install_druid() {
-  install_tarball http://static.druid.io/artifacts/releases/druid-services-0.5.7-bin.tar.gz
+  install_tarball_no_md5 http://static.druid.io/artifacts/releases/druid-services-0.5.7-bin.tar.gz
 }

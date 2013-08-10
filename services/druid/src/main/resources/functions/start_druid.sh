@@ -1,6 +1,7 @@
 function start_druid() {
 
     ROLE=$1
+    echo "Inside start_druid(), ROLE=$ROLE"
 
     # Make logs directory
     mkdir /usr/local/druid-services-0.5.7/logs

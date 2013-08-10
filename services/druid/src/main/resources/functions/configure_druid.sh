@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-function configure_druid_standalone() {
+function configure_druid() {
 
   ROLE=$1
   ZOOKEEKER_QUORUM=$2
@@ -46,6 +46,7 @@ com.metamx.aws.accessKey=dummy_access_key
 com.metamx.aws.secretKey=dummy_secret_key
 druid.pusher.s3.bucket=dummy_s3_bucket
 
+druid.client.http.connections=30
 druid.zk.service.host=$ZOOKEEPER_QUORUM
 druid.server.maxSize=300000000000
 druid.zk.paths.base=/druid
