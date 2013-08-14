@@ -17,11 +17,13 @@
 function configure_druid() {
 
   ROLE=$1
-  ZOOKEEKER_QUORUM=$2
+  ZOOKEEPER_QUORUM=$2
   PORT=$3
   MYSQL_HOSTNAME=$4
-  HOSTNAME=`hostname`
+  HOSTNAME=$PRIVATE_IP
   ROLE_NAME=${ROLE/druid-//}
+
+  echo "ROLE: $ROLE, ZOOKEEPER_QUORUM: $ZOOKEEPER_QUORUM, PORT: $PORT, MYSQL_HOSTNAME=$MYSQL_HOSTNAME, HOSTNAME=$HOSTNAME, ROLE_NAME=$ROLE_NAME"
 
   # Configure runtime.properties with Zookeeper address
   cat > /usr/local/druid-services-0.5.7/config/$ROLE_NAME/runtime.properties <<EOF

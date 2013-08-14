@@ -23,6 +23,15 @@ function install_mysql() {
   sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password_again password diurd'
   sudo apt-get -q -y -V --force-yes --reinstall install mysql-server-5.1
 
+  # Remove binding to localhost so we can accept external connections
+  sudo sed -i "s/bind-address/# bind-address/" /etc/mysql/my.cnf
+
+  # Restart mysql
+  sudo restart mysql
+
   # Setup druid tables
+  mysql -u root -pdiurd -e "CREATE USER 'druid'@'%' IDENTIFIED BY 'diurd'"; 2>&1 > /dev/null
   mysql -u root -pdiurd -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" 2>&1 > /dev/null
+  mysql -u root -pdiurd -e "GRANT ALL ON druid.* TO 'druid'@'%' IDENTIFIED BY 'diurd'"; 2>&1 > /dev/null
+  mysql -u root -pdiurd -e "FLUSH PRIVILEGES;"
 }

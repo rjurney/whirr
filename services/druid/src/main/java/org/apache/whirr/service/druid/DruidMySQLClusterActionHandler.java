@@ -41,11 +41,19 @@ public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {
         return ROLE;
     }
 
+    public Integer getPort() {
+        return PORT;
+    }
+
     @Override
     protected void beforeBootstrap(ClusterActionEvent event) throws IOException {
         ClusterSpec clusterSpec = event.getClusterSpec();
         Configuration conf = getConfiguration(clusterSpec);
 
+        addStatement(event, call("configure_hostnames"));
         addStatement(event, call("install_mysql")); // installed/run via apt-get
+    }
+    protected void beforeConfigure(ClusterActionEvent event) throws IOException {
+        // No-op
     }
 }

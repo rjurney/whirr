@@ -31,9 +31,9 @@ public class DruidCluster {
                 RolePredicates.role(DruidBrokerClusterActionHandler.ROLE))
                 .getPublicAddress();
     }
-    public static InetAddress getMySQLPublicAddress(Cluster cluster) throws IOException {
+    public static String getMySQLPublicAddress(Cluster cluster) throws IOException {
         return cluster.getInstanceMatching(
                 RolePredicates.role(DruidMySQLClusterActionHandler.ROLE))
-                .getPublicAddress();
+                .getPrivateIp();
     }
 }

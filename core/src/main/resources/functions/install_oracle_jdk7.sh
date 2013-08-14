@@ -29,15 +29,18 @@ function install_oracle_jdk7() {
   arch=`uname -m`
 
   # Find out which tarball to download
-  url=http://download.oracle.com/otn-pub/java/jdk/7/jdk-7-linux-i586.tar.gz
+  url=http://download.oracle.com/otn-pub/java/jdk/7u25-b15/jdk-7u25-linux-i586.tar.gz
   if [ "x86_64" == "$arch" ]; then
-    url=http://download.oracle.com/otn-pub/java/jdk/7/jdk-7-linux-x64.tar.gz
+    url=http://download.oracle.com/otn-pub/java/jdk/7u25-b15/jdk-7u25-linux-x64.tar.gz
   fi
   
   tmpdir=`mktemp -d`
   curl $url -L --silent --show-error --fail --connect-timeout 60 --max-time 600 --retry 5 -o $tmpdir/`basename $url`
-
-  (cd $tmpdir; tar xzf `basename $url`)
+  echo "tmpdir: $tmpdir"
+  echo "basename url: `basename $url`
+  echo "target_dir: $target_dir"
+  echo "dirname target_dir: `dirname $target_dir"
+  (cd $tmpdir; tar xvzf `basename $url`)
   mkdir -p `dirname $target_dir`
   (cd $tmpdir; mv jdk1* $target_dir)
   rm -rf $tmpdir

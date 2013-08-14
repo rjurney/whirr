@@ -49,6 +49,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
             LoggerFactory.getLogger(DruidClusterActionHandler.class);
 
     public abstract String getRole();
+    public abstract Integer getPort();
 
     // Always over-ridden in subclass
     @Override
@@ -57,7 +58,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         Cluster cluster = event.getCluster();
         Configuration conf = getConfiguration(clusterSpec);
 
-        LOG.info("Role: [" + getRole() + "] Port: [" + PORT + "]");
+        LOG.info("Role: [" + getRole() + "] Port: [" + getPort() + "]");
         // Open a port for each service
 //        event.getFirewallManager().addRule(
 //                FirewallManager.Rule.create().destination(role(ROLE)).port(PORT)
@@ -73,16 +74,16 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
         String quorum = ZooKeeperCluster.getHosts(cluster);
         LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
-        //String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster).toString();
-        String mysqlAddress = "foo";
+        String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster);
+        LOG.info("DruidCluster.getMySQLPublicAddress(cluster).getHostAddress(): " + mysqlAddress);
         String tarurl = prepareRemoteFileUrl(event,
                 conf.getString(DruidConstants.KEY_TARBALL_URL));
         addStatement(event, call("retry_helpers"));
-        addStatement(event, call(
-                getConfigureFunction(conf),
+        addStatement(event, call("configure_hostnames"));
+        addStatement(event, call("configure_druid",
                 getRole(),
                 quorum,
-                PORT.toString(),
+                getPort().toString(),
                 mysqlAddress
         ));
     }

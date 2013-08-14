@@ -61,4 +61,9 @@ public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
     public String getRole() {
         return ROLE;
     }
+
+    @Override
+    public Integer getPort() {
+        return PORT;
+    }
 }
