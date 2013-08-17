@@ -59,12 +59,13 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         Configuration conf = getConfiguration(clusterSpec);
 
         LOG.info("Role: [" + getRole() + "] Port: [" + getPort() + "]");
-        // Open a port for each service
-//        event.getFirewallManager().addRule(
-//                FirewallManager.Rule.create().destination(role(ROLE)).port(PORT)
-//        );
 
-        //handleFirewallRules(event);
+        // Open a port for the service
+        event.getFirewallManager().addRule(
+                FirewallManager.Rule.create().destination(role(getRole())).port(getPort())
+        );
+
+        handleFirewallRules(event);
 
 //        try {
 //            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
