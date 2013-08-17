@@ -22,6 +22,7 @@ function install_mysql() {
   sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password password diurd'
   sudo debconf-set-selections <<< 'mysql-server-5.1 mysql-server/root_password_again password diurd'
   sudo apt-get -q -y -V --force-yes --reinstall install mysql-server-5.1
+  sudo apt-get -q -y -V --force-yes --reinstall install mysql-client-5.1
 
   # Remove binding to localhost so we can accept external connections
   sudo sed -i "s/bind-address/# bind-address/" /etc/mysql/my.cnf

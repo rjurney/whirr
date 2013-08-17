@@ -4,11 +4,13 @@ function start_druid() {
     echo "Inside start_druid(), ROLE=$ROLE"
 
     # Make logs directory
+    echo "Creating log directory..."
     if [ ! -d "/usr/local/druid-services-0.5.7/logs" ]; then
       mkdir /usr/local/druid-services-0.5.7/logs
     fi
 
     # Start the appropriate role
+    echo "Executing druid $ROLE..."
     case $ROLE in
         druid)
             # Run the realtime node

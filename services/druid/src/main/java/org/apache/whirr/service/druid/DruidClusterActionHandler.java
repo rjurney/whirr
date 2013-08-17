@@ -72,7 +72,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 //            throw new IOException(e);
 //        }
 
-        String quorum = ZooKeeperCluster.getHosts(cluster);
+        String quorum = ZooKeeperCluster.getHosts(cluster, true);
         LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
         String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster);
         LOG.info("DruidCluster.getMySQLPublicAddress(cluster).getHostAddress(): " + mysqlAddress);
@@ -86,6 +86,11 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
                 getPort().toString(),
                 mysqlAddress
         ));
+
+        // Configure the realtime spec for realtime nodes
+        if(getRole().equals("druid-realtime")) {
+            addStatement(event, call("configure_realtime", quorum));
+        }
     }
 
     @Override
@@ -93,6 +98,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         ClusterSpec clusterSpec = event.getClusterSpec();
         Configuration conf = getConfiguration(clusterSpec);
 
+        addStatement(event, call("install_openjdk"));
         addStatement(event, call("retry_helpers"));
         addStatement(event, call("install_tarball_no_md5"));
         addStatement(event, call("configure_hostnames"));
