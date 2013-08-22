@@ -18,6 +18,9 @@
 package org.apache.whirr.service.druid;
 
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.nio.charset.Charset;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -51,6 +54,20 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     public abstract String getRole();
     public abstract Integer getPort();
 
+    private String readFile( String file ) throws IOException {
+        BufferedReader reader = new BufferedReader( new FileReader(file));
+        String         line = null;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
+
+        while( ( line = reader.readLine() ) != null ) {
+            stringBuilder.append( line );
+            stringBuilder.append( ls );
+        }
+
+        return stringBuilder.toString();
+    }
+
     // Always over-ridden in subclass
     @Override
     protected void beforeConfigure(ClusterActionEvent event) throws IOException {
@@ -67,16 +84,17 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
         handleFirewallRules(event);
 
-//        try {
-//            Configuration config = DruidConfigurationBuilder.buildDruidConfig("/tmp/broker.properties", clusterSpec, cluster);
-//        } catch (ConfigurationException e) {
-//            throw new IOException(e);
-//        }
-
+        // Zookeeper quorum
         String quorum = ZooKeeperCluster.getHosts(cluster, true);
         LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
+
+        // Get the right version of druid
+        String druidVersion = (String)conf.getProperty("whirr.druid.version");
+        LOG.info("whirr.druid.version: " + druidVersion);
+
         String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster);
         LOG.info("DruidCluster.getMySQLPublicAddress(cluster).getHostAddress(): " + mysqlAddress);
+
         String tarurl = prepareRemoteFileUrl(event,
                 conf.getString(DruidConstants.KEY_TARBALL_URL));
         addStatement(event, call("retry_helpers"));
@@ -90,7 +108,17 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
         // Configure the realtime spec for realtime nodes
         if(getRole().equals("druid-realtime")) {
-            addStatement(event, call("configure_realtime", quorum));
+            String specPath = (String)conf.getProperty("whirr.druid.realtime.spec.path");
+            LOG.info("whirr.druid.realtime.spec.path" + specPath);
+
+            if(specPath == null || specPath.equals("")) {
+                // Default to the included realtime.spec
+                specPath = DruidClusterActionHandler.class.getResource("/" + "realtime.spec").toString();
+            }
+
+            // Quorum is a variable in the realtime.spec
+            String realtimeSpec = "'" + readFile(specPath) + "'";
+            addStatement(event, call("configure_realtime", quorum, realtimeSpec));
         }
     }
 
