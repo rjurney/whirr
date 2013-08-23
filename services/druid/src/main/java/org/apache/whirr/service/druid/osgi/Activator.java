@@ -19,7 +19,6 @@ package org.apache.whirr.service.druid.osgi;
 
 import org.apache.whirr.service.ClusterActionHandler;
 import org.apache.whirr.service.druid.*;
-import org.apache.whirr.service.druid.DruidStandaloneClusterActionHandler;
 import org.jclouds.scriptbuilder.functionloader.osgi.BundleFunctionLoader;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -30,9 +29,6 @@ import java.util.Properties;
 public class Activator implements BundleActivator {
 
     private BundleFunctionLoader functionLoader;
-
-    private final ClusterActionHandler druidClusterActionHandler = new DruidStandaloneClusterActionHandler();
-    private ServiceRegistration druidRegistration;
 
     private final ClusterActionHandler druidBrokerClusterActionHandler = new DruidBrokerClusterActionHandler();
     private ServiceRegistration druidBrokerRegistration;
@@ -69,10 +65,6 @@ public class Activator implements BundleActivator {
         //Initialize OSGi based FunctionLoader
         functionLoader = new BundleFunctionLoader(context);
         functionLoader.start();
-
-        Properties standaloneProps = new Properties();
-        standaloneProps.put("name", "druid");
-        druidRegistration = context.registerService(ClusterActionHandler.class.getName(), druidClusterActionHandler, standaloneProps);
 
         Properties brokerProps = new Properties();
         brokerProps.put("name", "druid-broker");
@@ -115,9 +107,6 @@ public class Activator implements BundleActivator {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-        if (druidRegistration != null) {
-            druidRegistration.unregister();
-        }
         if (druidBrokerRegistration != null) {
             druidBrokerRegistration.unregister();
         }

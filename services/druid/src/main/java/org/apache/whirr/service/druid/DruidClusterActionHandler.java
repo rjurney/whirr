@@ -88,15 +88,9 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         String quorum = ZooKeeperCluster.getHosts(cluster, true);
         LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
 
-        // Get the right version of druid
-        String druidVersion = (String)conf.getProperty("whirr.druid.version");
-        LOG.info("whirr.druid.version: " + druidVersion);
-
         String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster);
         LOG.info("DruidCluster.getMySQLPublicAddress(cluster).getHostAddress(): " + mysqlAddress);
 
-        String tarurl = prepareRemoteFileUrl(event,
-                conf.getString(DruidConstants.KEY_TARBALL_URL));
         addStatement(event, call("retry_helpers"));
         addStatement(event, call("configure_hostnames"));
         addStatement(event, call("configure_druid",
@@ -129,29 +123,25 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
         addStatement(event, call("install_openjdk"));
         addStatement(event, call("retry_helpers"));
-        addStatement(event, call("install_tarball_no_md5"));
         addStatement(event, call("configure_hostnames"));
 
         //addStatement(event, call(getInstallFunction(conf, "java", "install_oracle_jdk7")));
 
-        String tarurl = prepareRemoteFileUrl(event,
-                getConfiguration(clusterSpec).getString(DruidConstants.KEY_TARBALL_URL));
+        // Get the right version of druid and map this to the tarUrl
+        String druidVersion = (String)conf.getProperty("whirr.druid.version");
+        LOG.info("whirr.druid.version: " + druidVersion);
+        String tarUrl = DruidCluster.getDownloadUrl(druidVersion);
+        LOG.info("whirr tarUrl: " + tarUrl);
 
-        addStatement(event, call(
-                getInstallFunction(getConfiguration(clusterSpec)), tarurl)
-        );
+        addStatement(event, call("install_druid", tarUrl));
     }
 
     protected synchronized Configuration getConfiguration(ClusterSpec clusterSpec) throws IOException {
-        return getConfiguration(clusterSpec, DruidConstants.FILE_DRUID_DEFAULT_PROPERTIES);
-    }
-
-    protected String getInstallFunction(Configuration config) {
-        return getInstallFunction(config, "druid", DruidConstants.FUNCTION_INSTALL);
+        return getConfiguration(clusterSpec, "whirr-druid-default.properties");
     }
 
     protected String getConfigureFunction(Configuration config) {
-        return getConfigureFunction(config, "druid", DruidConstants.FUNCTION_CONFIGURE);
+        return "configure_druid";
     }
 
     @Override

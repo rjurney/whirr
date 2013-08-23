@@ -36,4 +36,7 @@ public class DruidCluster {
                 RolePredicates.role(DruidMySQLClusterActionHandler.ROLE))
                 .getPrivateIp();
     }
+    public static String getDownloadUrl(String version) {
+        return "http://static.druid.io/artifacts/releases/druid-services-" + version + "-bin.tar.gz";
+    }
 }

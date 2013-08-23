@@ -19,6 +19,8 @@ function configure_realtime() {
   ZOOKEEPER_QUORUM=$1
   REALTIME_SPEC=$2
 
+  echo "PWD: `pwd`"
+
   cat > /usr/local/druid-services-0.5.7/config/realtime/realtime.spec << EOF
 ${REALTIME_SPEC}
 EOF
