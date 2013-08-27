@@ -20,6 +20,9 @@ function configure_druid() {
   ZOOKEEPER_QUORUM=$2
   PORT=$3
   MYSQL_HOSTNAME=$4
+  IDENTITY=$5
+  CREDENTIAL=$6
+  S3_BUCKET=$7
   HOSTNAME=$PRIVATE_IP
   ROLE_NAME=${ROLE/druid-//}
 
@@ -44,9 +47,9 @@ com.metamx.emitter.logging=true
 com.metamx.emitter.logging.level=info
 
 # below are dummy values when operating a realtime only node
-com.metamx.aws.accessKey=dummy_access_key
-com.metamx.aws.secretKey=dummy_secret_key
-druid.pusher.s3.bucket=dummy_s3_bucket
+com.metamx.aws.accessKey=$IDENTITY
+com.metamx.aws.secretKey=$CREDENTIAL
+druid.pusher.s3.bucket=${S3_BUCKET}
 
 druid.client.http.connections=30
 druid.zk.service.host=$ZOOKEEPER_QUORUM

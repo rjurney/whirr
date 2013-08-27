@@ -21,6 +21,7 @@ package org.apache.whirr.service.druid;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -88,8 +89,17 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         String quorum = ZooKeeperCluster.getHosts(cluster, true);
         LOG.info("ZookeeperCluster.getHosts(cluster): " + quorum);
 
+        // Get MySQL Server address
         String mysqlAddress = DruidCluster.getMySQLPublicAddress(cluster);
         LOG.info("DruidCluster.getMySQLPublicAddress(cluster).getHostAddress(): " + mysqlAddress);
+
+        // Get Blobstore and bucket
+        Map<String, String> env = System.getenv();
+        String identity = clusterSpec.getBlobStoreIdentity();
+        String credential = clusterSpec.getBlobStoreCredential();
+        String s3Bucket = conf.getString("whirr.druid.pusher.s3.bucket");
+        System.err.print("Identity: " + identity + "\n");
+        System.err.print("Credential: " + credential + "\n");
 
         addStatement(event, call("retry_helpers"));
         addStatement(event, call("configure_hostnames"));
@@ -97,7 +107,10 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
                 getRole(),
                 quorum,
                 getPort().toString(),
-                mysqlAddress
+                mysqlAddress,
+                identity,
+                credential,
+                s3Bucket
         ));
 
         // Configure the realtime spec for realtime nodes
