@@ -98,8 +98,7 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
         String identity = clusterSpec.getBlobStoreIdentity();
         String credential = clusterSpec.getBlobStoreCredential();
         String s3Bucket = conf.getString("whirr.druid.pusher.s3.bucket");
-        System.err.print("Identity: " + identity + "\n");
-        System.err.print("Credential: " + credential + "\n");
+        LOG.info("whirr.druid.pusher.s3.bucket: " + s3Bucket);
 
         addStatement(event, call("retry_helpers"));
         addStatement(event, call("configure_hostnames"));
