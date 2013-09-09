@@ -119,7 +119,8 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
             if(specPath == null || specPath.equals("")) {
                 // Default to the included realtime.spec
-                specPath = DruidClusterActionHandler.class.getResource("/" + "realtime.spec").toString();
+                specPath = DruidClusterActionHandler.class.getResource("/" + "realtime.spec").getPath();
+                // prepareRemoteFileUrl(event, specPath);
             }
 
             // Quorum is a variable in the realtime.spec
