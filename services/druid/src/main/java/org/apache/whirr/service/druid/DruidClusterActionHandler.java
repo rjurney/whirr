@@ -20,13 +20,7 @@ package org.apache.whirr.service.druid;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.whirr.RolePredicates;
-import org.apache.whirr.Cluster.Instance;
 
 import org.apache.whirr.Cluster;
 import org.apache.whirr.service.ClusterActionEvent;
@@ -44,10 +38,8 @@ import org.slf4j.LoggerFactory;
 import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
-public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupport {
-
-    public static String ROLE = "druid-invalid-override-me";
-    public static Integer PORT = 8080;
+public abstract class DruidClusterActionHandler
+        extends ClusterActionHandlerSupport {
 
     private static final Logger LOG =
             LoggerFactory.getLogger(DruidClusterActionHandler.class);
@@ -56,14 +48,14 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
     public abstract Integer getPort();
 
     private String readFile( String file ) throws IOException {
-        BufferedReader reader = new BufferedReader( new FileReader(file));
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         String         line = null;
         StringBuilder  stringBuilder = new StringBuilder();
         String         ls = System.getProperty("line.separator");
 
-        while( ( line = reader.readLine() ) != null ) {
-            stringBuilder.append( line );
-            stringBuilder.append( ls );
+        while((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append(ls);
         }
 
         return stringBuilder.toString();
@@ -71,7 +63,8 @@ public abstract class DruidClusterActionHandler extends ClusterActionHandlerSupp
 
     // Always over-ridden in subclass
     @Override
-    protected void beforeConfigure(ClusterActionEvent event) throws IOException {
+    protected void beforeConfigure(ClusterActionEvent event)
+            throws IOException {
         ClusterSpec clusterSpec = event.getClusterSpec();
         Cluster cluster = event.getCluster();
         Configuration conf = getConfiguration(clusterSpec);

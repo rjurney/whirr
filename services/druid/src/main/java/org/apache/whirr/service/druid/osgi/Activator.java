@@ -18,7 +18,11 @@
 package org.apache.whirr.service.druid.osgi;
 
 import org.apache.whirr.service.ClusterActionHandler;
-import org.apache.whirr.service.druid.*;
+import org.apache.whirr.service.druid.DruidBrokerClusterActionHandler;
+import org.apache.whirr.service.druid.DruidComputeClusterActionHandler;
+import org.apache.whirr.service.druid.DruidMasterClusterActionHandler;
+import org.apache.whirr.service.druid.DruidMySQLClusterActionHandler;
+import org.apache.whirr.service.druid.DruidRealtimeClusterActionHandler;
 import org.jclouds.scriptbuilder.functionloader.osgi.BundleFunctionLoader;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -30,19 +34,24 @@ public class Activator implements BundleActivator {
 
     private BundleFunctionLoader functionLoader;
 
-    private final ClusterActionHandler druidBrokerClusterActionHandler = new DruidBrokerClusterActionHandler();
+    private final ClusterActionHandler druidBrokerClusterActionHandler = new
+            DruidBrokerClusterActionHandler();
     private ServiceRegistration druidBrokerRegistration;
 
-    private final ClusterActionHandler druidMasterClusterActionHandler = new DruidMasterClusterActionHandler();
+    private final ClusterActionHandler druidMasterClusterActionHandler = new
+            DruidMasterClusterActionHandler();
     private ServiceRegistration druidMasterRegistration;
 
-    private final ClusterActionHandler druidComputeClusterActionHandler = new DruidComputeClusterActionHandler();
+    private final ClusterActionHandler druidComputeClusterActionHandler = new
+            DruidComputeClusterActionHandler();
     private ServiceRegistration druidComputeRegistration;
 
-    private final ClusterActionHandler druidRealtimeClusterActionHandler = new DruidRealtimeClusterActionHandler();
+    private final ClusterActionHandler druidRealtimeClusterActionHandler = new
+            DruidRealtimeClusterActionHandler();
     private ServiceRegistration druidRealtimeRegistration;
 
-    private final ClusterActionHandler druidMySQLClusterActionHandler = new DruidMySQLClusterActionHandler();
+    private final ClusterActionHandler druidMySQLClusterActionHandler = new
+            DruidMySQLClusterActionHandler();
     private ServiceRegistration druidMySQLRegistration;
 
     /**
@@ -56,9 +65,9 @@ public class Activator implements BundleActivator {
      *
      * @param context The execution context of the bundle being started.
      * @throws Exception If this method throws an exception, this
-     *                   bundle is marked as stopped and the Framework will remove this
-     *                   bundle's listeners, unregister all services registered by this
-     *                   bundle, and release all services used by this bundle.
+     *         bundle is marked as stopped and the Framework will remove this
+     *         bundle's listeners, unregister all services registered by this
+     *         bundle, and release all services used by this bundle.
      */
     @Override
     public void start(BundleContext context) throws Exception {
@@ -68,23 +77,42 @@ public class Activator implements BundleActivator {
 
         Properties brokerProps = new Properties();
         brokerProps.put("name", "druid-broker");
-        druidBrokerRegistration = context.registerService(ClusterActionHandler.class.getName(), druidBrokerClusterActionHandler, brokerProps);
+        druidBrokerRegistration = context.registerService(
+                ClusterActionHandler.class.getName(),
+                druidBrokerClusterActionHandler,
+                brokerProps
+        );
 
         Properties masterProps = new Properties();
         masterProps.put("name", "druid-master");
-        druidMasterRegistration = context.registerService(ClusterActionHandler.class.getName(), druidMasterClusterActionHandler, masterProps);
+        druidMasterRegistration = context.registerService(
+                ClusterActionHandler.class.getName(),
+                druidMasterClusterActionHandler, masterProps
+        );
 
         Properties computeProps = new Properties();
         computeProps.put("name", "druid-compute");
-        druidComputeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidComputeClusterActionHandler, computeProps);
+        druidComputeRegistration = context.registerService(
+                ClusterActionHandler.class.getName(),
+                druidComputeClusterActionHandler,
+                computeProps
+        );
 
         Properties realtimeProps = new Properties();
         realtimeProps.put("name", "druid-realtime");
-        druidRealtimeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidRealtimeClusterActionHandler, realtimeProps);
+        druidRealtimeRegistration = context.registerService(
+                ClusterActionHandler.class.getName(),
+                druidRealtimeClusterActionHandler,
+                realtimeProps
+        );
 
         Properties mysqlProps = new Properties();
         realtimeProps.put("name", "druid-mysql");
-        druidRealtimeRegistration = context.registerService(ClusterActionHandler.class.getName(), druidRealtimeClusterActionHandler, mysqlProps);
+        druidRealtimeRegistration = context.registerService(
+                ClusterActionHandler.class.getName(),
+                druidRealtimeClusterActionHandler,
+                mysqlProps
+        );
 
     }
 
@@ -101,9 +129,9 @@ public class Activator implements BundleActivator {
      *
      * @param context The execution context of the bundle being stopped.
      * @throws Exception If this method throws an exception, the
-     *                   bundle is still marked as stopped, and the Framework will remove
-     *                   the bundle's listeners, unregister all services registered by the
-     *                   bundle, and release all services used by the bundle.
+     *         bundle is still marked as stopped, and the Framework will remove
+     *         the bundle's listeners, unregister all services registered by the
+     *         bundle, and release all services used by the bundle.
      */
     @Override
     public void stop(BundleContext context) throws Exception {

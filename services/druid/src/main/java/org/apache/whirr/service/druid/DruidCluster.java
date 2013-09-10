@@ -22,21 +22,31 @@ import org.apache.whirr.Cluster;
 import org.apache.whirr.RolePredicates;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
+/**
+ * DruidCluster - master class of the Druid cluster, with static methods.
+ */
 public class DruidCluster {
-
-    public static InetAddress getBrokerPublicAddress(Cluster cluster) throws IOException {
-        return cluster.getInstanceMatching(
-                RolePredicates.role(DruidBrokerClusterActionHandler.ROLE))
-                .getPublicAddress();
-    }
-    public static String getMySQLPublicAddress(Cluster cluster) throws IOException {
+    /**
+     * Returns the public address of the MySQL node.
+     * @param cluster the Cluster object
+     * @return mysql ip
+     * @throws IOException
+     */
+    public static String getMySQLPublicAddress(Cluster cluster)
+            throws IOException {
         return cluster.getInstanceMatching(
                 RolePredicates.role(DruidMySQLClusterActionHandler.ROLE))
                 .getPrivateIp();
     }
+
+    /**
+     * Converts a version to a url.
+     * @param version - the druid release
+     * @return version url
+     */
     public static String getDownloadUrl(String version) {
-        return "http://static.druid.io/artifacts/releases/druid-services-" + version + "-bin.tar.gz";
+        return "http://static.druid.io/artifacts/releases/druid-services-"
+                + version + "-bin.tar.gz";
     }
 }

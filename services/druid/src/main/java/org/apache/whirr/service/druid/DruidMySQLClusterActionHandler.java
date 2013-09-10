@@ -18,18 +18,11 @@
 package org.apache.whirr.service.druid;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.whirr.Cluster;
 import org.apache.whirr.ClusterSpec;
 import org.apache.whirr.service.ClusterActionEvent;
-import org.apache.whirr.service.ClusterActionHandler;
-import org.apache.whirr.service.FirewallManager;
-import org.apache.whirr.service.zookeeper.ZooKeeperCluster;
-import org.jclouds.openstack.nova.v2_0.extensions.VirtualInterfaceApi;
 
 import java.io.IOException;
 
-import static org.apache.whirr.RolePredicates.role;
 import static org.jclouds.scriptbuilder.domain.Statements.call;
 
 public class DruidMySQLClusterActionHandler extends DruidClusterActionHandler {

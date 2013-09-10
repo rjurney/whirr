@@ -17,18 +17,21 @@
  */
 package org.apache.whirr.service.druid;
 
+/**
+ * Broker subclass of DruidClusterActionHandler.
+ */
 public class DruidBrokerClusterActionHandler extends DruidClusterActionHandler {
 
     public static final String ROLE = "druid-broker";
     public static final Integer PORT = 8080;
 
     @Override
-    public String getRole() {
+    public final String getRole() {
         return ROLE;
     }
 
     @Override
-    public Integer getPort() {
+    public final Integer getPort() {
         return PORT;
     }
 }
